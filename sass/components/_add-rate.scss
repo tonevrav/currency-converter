@@ -1,0 +1,41 @@
+@import "../utils/variables";
+
+.add-rate {
+    padding: 20px 0;
+    font-family: Georgia;
+}
+
+.add-rate__form {
+    // border: 2px solid black;
+
+    display: flex;
+    justify-content: center;
+    align-items: end;
+    gap: $gap + 30px;
+}
+
+.add-rate__label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 1rem;
+}
+
+.add-rate__input {
+    border: 2px solid $accentColor;
+    border-radius: 5px;
+
+    height: 30px;
+    width: 220px;
+}
+
+.add-rate__button {
+    height: 35px;
+    width: 100px;
+
+    font-size: 0.9rem;
+    border-radius: 10px;
+
+    background-color: $accentColor;
+    color: $lightTextColor;
+    cursor: pointer;
+}

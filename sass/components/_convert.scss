@@ -1,0 +1,51 @@
+@import "../utils/variables";
+
+.convert-form {
+    padding: 20px 0;
+    // text-align: center;
+}
+
+.convert__select {
+    height: 30px;
+    width: 220px;
+
+    text-indent: 3px;
+    border-radius: 5px;
+
+    border: 2px solid $accentColor;
+    background-color: $lightTextColor;
+}
+
+.convert__wrapper {
+    display: flex;
+    justify-content: center;
+    gap: $gap;
+    margin-bottom: 25px;
+}
+
+.convert__label {
+    margin-bottom: 10px;
+}
+
+.convert__item {
+    height: 30px;
+    width: 220px;
+
+    border: 2px solid $accentColor;
+    border-radius: 4px;
+}
+
+.convert__button {
+    height: 35px;
+    width: 100px;
+
+    font-size: 0.9rem;
+    border-radius: 10px;
+
+    background-color: $accentColor;
+    color: $lightTextColor;
+    cursor: pointer;
+
+    display: block;
+    margin: 0 auto;
+}

@@ -1,0 +1,26 @@
+@import "../utils/variables";
+
+.header {
+    background-color: $accentColor;
+}
+
+.header__nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: $gap;
+    font-size: 1.1rem;
+    height: 65px;
+}
+
+.header__list {
+    display: flex;
+    justify-content: center;
+    gap: $gap;
+}
+
+.header__link {
+    text-decoration: none;
+    color: $lightTextColor;
+    padding: 15px 5px;
+}
