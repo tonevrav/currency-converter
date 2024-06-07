@@ -1,0 +1,49 @@
+@import "../utils/variables";
+
+.grid__container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 25px;
+}
+
+.grid__item {
+    border: 2px solid $accentColor;
+    padding: 20px;
+    border-radius: 15px;
+    text-align-last: left;
+}
+
+.grid__item p {
+    font-size: 1.1rem;
+
+    margin-bottom: 10px;
+}
+
+.grid__item ul {
+    list-style-type: square;
+    margin-left: 25px;
+    margin-bottom: 10px;
+}
+
+.grid__item ul li {
+    margin-bottom: 10px;
+}
+
+.grid__search {
+    border: 2px solid $accentColor;
+    height: 30px;
+    width: 220px;
+    border-radius: 5px;
+    text-indent: 5px;
+
+    margin-bottom: 25px;
+}
+
+.grid__search-button {
+    height: 30px;
+    width: 60px;
+    border-radius: 10px;
+    margin-left: 10px;
+    background-color: $accentColor;
+    color: white;
+}

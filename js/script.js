@@ -1,4 +1,4 @@
-// ! DATA
+// DATA
 
 const rateFromEl = document.querySelector("#rateFrom");
 const rateToEl = document.querySelector("#rateTo");
@@ -14,39 +14,50 @@ const convertEl = document.querySelector("#convert");
 
 const addedFromCurrencies = [];
 
-// ! LOGIC
+const formEl = document.querySelector(".convert-form");
+const resultMessageEl = document.createElement("p");
+resultMessageEl.classList.add("convert__message");
 
-function addNewRate() {
+const searchInput = document.querySelector("#search");
+
+// LOGIC
+
+function addNewRate(element) {
+    element.preventDefault();
+
     const rateFrom = rateFromEl.value;
     const rateTo = rateToEl.value;
     const newRate = parseFloat(newRateEl.value);
 
-    const newRateObject = {
-        timestamp: new Date().getTime(),
-        base: rateFrom,
-        date: new Date().toISOString().slice(0, 10),
-        rates: {
-            [rateTo]: newRate,
-        },
-    };
+    if (rateFrom && rateTo && !isNaN(newRate)) {
+        const newRateObject = {
+            timestamp: new Date().getTime(),
+            base: rateFrom,
+            date: new Date().toISOString().slice(0, 10),
+            rates: {
+                [rateTo]: newRate,
+            },
+        };
 
-    let found = false;
-    for (let i = 0; i < allRates.length; i++) {
-        // Check if the rate object already exists in the allRates array
-        if (allRates[i].base === rateFrom) {
-            allRates[i].rates[rateTo] = newRate;
-            found = true;
-            break;
+        let found = false;
+        for (let i = 0; i < allRates.length; i++) {
+            // Check if the rate object already exists in the allRates array
+            if (allRates[i].base === rateFrom) {
+                allRates[i].rates[rateTo] = newRate;
+                found = true;
+                break;
+            }
         }
+
+        if (!found) {
+            allRates.push(newRateObject);
+        }
+
+        console.log(allRates); // modern debugger
+
+        addElementsToHTML();
+        addGridElementToHTML();
     }
-
-    if (!found) {
-        allRates.push(newRateObject);
-    }
-
-    console.log(allRates); // Remove this later
-
-    addElementsToHTML();
 }
 
 function addElementsToHTML() {
@@ -59,9 +70,8 @@ function addElementsToHTML() {
         }
     }
 
+    // Dynamically add currencies to the second section element depending on which currency is selected in the first drop-down list
     convertFromEl.onchange = function () {
-        // Dynamically add currencies to the second section element depending on which currency is selected in the first drop-down list
-
         const selectedCurrency = convertFromEl.value;
 
         // ! DEFINITELY MUST CHANGE CODE BELOW
@@ -71,9 +81,9 @@ function addElementsToHTML() {
 
         for (let i = 0; i < allRates.length; i++) {
             if (allRates[i].base === selectedCurrency) {
-                for (const rate in allRates[i].rates) {
-                    if (allRates[i].rates.hasOwnProperty(rate)) {
-                        addOption(convertToEl, rate);
+                for (const rateTo in allRates[i].rates) {
+                    if (allRates[i].rates.hasOwnProperty(rateTo)) {
+                        addOption(convertToEl, rateTo);
                     }
                 }
                 break;
@@ -110,9 +120,6 @@ function convertCurrency(event) {
 
     result = amount * rate;
 
-    const formEl = document.convertForm;
-    const resultMessageEl = document.createElement("p");
-
     if (
         currencyFrom === "Select Currency" ||
         currencyTo === "Select Currency"
@@ -127,7 +134,89 @@ function convertCurrency(event) {
     formEl.appendChild(resultMessageEl);
 }
 
+function addGridElementToHTML() {
+    const gridContainer = document.querySelector(".grid__container");
+    gridContainer.innerHTML = "";
+
+    allRates.forEach((rateObject) => {
+        const gridItem = document.createElement("div");
+        gridItem.classList.add("grid__item");
+
+        const baseElement = document.createElement("p");
+        baseElement.textContent = `Base: ${rateObject.base}`;
+        gridItem.appendChild(baseElement);
+
+        const ratesElement = document.createElement("p");
+        ratesElement.textContent = "Rates:";
+        gridItem.appendChild(ratesElement);
+
+        const ratesList = document.createElement("ul");
+        for (const currency in rateObject.rates) {
+            if (rateObject.rates.hasOwnProperty(currency)) {
+                const rateItem = document.createElement("li");
+                rateItem.textContent = `${currency}: ${rateObject.rates[currency]}`;
+                ratesList.appendChild(rateItem);
+            }
+        }
+        gridItem.appendChild(ratesList);
+
+        const dateElement = document.createElement("p");
+        dateElement.textContent = `Date: ${rateObject.date}`;
+        gridItem.appendChild(dateElement);
+
+        gridContainer.appendChild(gridItem);
+    });
+}
+
+// Search Functionality
+function updateGrid(rates) {
+    const gridContainer = document.querySelector(".grid__container");
+    gridContainer.innerHTML = "";
+
+    rates.forEach((rateObject) => {
+        const gridItem = document.createElement("div");
+        gridItem.classList.add("grid__item");
+
+        const baseElement = document.createElement("p");
+        baseElement.textContent = `Base: ${rateObject.base}`;
+        gridItem.appendChild(baseElement);
+
+        const ratesElement = document.createElement("p");
+        ratesElement.textContent = "Rates:";
+        gridItem.appendChild(ratesElement);
+
+        const ratesList = document.createElement("ul");
+        for (const currency in rateObject.rates) {
+            if (rateObject.rates.hasOwnProperty(currency)) {
+                const rateItem = document.createElement("li");
+                rateItem.textContent = `${currency}: ${rateObject.rates[currency]}`;
+                ratesList.appendChild(rateItem);
+            }
+        }
+
+        const dateElement = document.createElement("div");
+        dateElement.textContent = `Date: ${rateObject.date}`;
+        gridItem.appendChild(ratesList);
+        gridItem.appendChild(dateElement);
+
+        gridContainer.appendChild(gridItem);
+    });
+}
+
+function searchFunction() {
+    const query = searchInput.value.toLowerCase();
+    const filteredRates = allRates.filter(
+        (rateObject) =>
+            rateObject.base.toLowerCase().includes(query) ||
+            Object.keys(rateObject.rates).some((currency) =>
+                currency.toLowerCase().includes(query)
+            )
+    );
+    updateGrid(filteredRates);
+}
+
 addRateEl.addEventListener("click", addNewRate);
 convertEl.addEventListener("click", convertCurrency);
+searchInput.addEventListener("keyup", searchFunction);
 
-// ! RENDER
+// RENDER
