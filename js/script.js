@@ -14,7 +14,7 @@ const convertEl = document.querySelector("#convert");
 
 const addedFromCurrencies = [];
 
-const formEl = document.convertForm;
+const formEl = document.querySelector(".convert-form");
 const resultMessageEl = document.createElement("p");
 resultMessageEl.classList.add("convert__message");
 
@@ -203,9 +203,7 @@ function updateGrid(rates) {
     });
 }
 
-addRateEl.addEventListener("click", addNewRate);
-convertEl.addEventListener("click", convertCurrency);
-searchInput.addEventListener("keyup", function () {
+function searchFunction() {
     const query = searchInput.value.toLowerCase();
     const filteredRates = allRates.filter(
         (rateObject) =>
@@ -215,6 +213,10 @@ searchInput.addEventListener("keyup", function () {
             )
     );
     updateGrid(filteredRates);
-});
+}
+
+addRateEl.addEventListener("click", addNewRate);
+convertEl.addEventListener("click", convertCurrency);
+searchInput.addEventListener("keyup", searchFunction);
 
 // RENDER
