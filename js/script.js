@@ -35,10 +35,10 @@ function getDataFromApi() {
         .then((data) => {
             allRates = data;
 
-            for (const item of data) {
+            allRates.map((item) => {
                 item.timestamp = new Date().getTime();
                 item.date = new Date().toISOString().slice(0, 10);
-            }
+            });
 
             addElementsToHTML();
             addGridElementToHTML();
@@ -52,11 +52,9 @@ function showInfoMarket() {
 
     let result = "";
 
-    if (getHours < 9 || 9 > 17) {
-        result = "The market is now closed";
-    } else {
-        result = "The market is now open";
-    }
+    getHours < 9 || 9 > 17
+        ? (result = "The market is now closed")
+        : (result = "The market is now open");
 
     const container = document.querySelector(".marketInfo");
     const messageInfoElement = document.createElement("p");
@@ -104,15 +102,6 @@ function addNewRate(element) {
 }
 
 function addElementsToHTML() {
-    // for (let i = 0; i < allRates.length; i++) {
-    //     const base = allRates[i].base;
-    //     if (!addedFromCurrencies.includes(base)) {
-    //         // Add the elements to the first section element
-    //         addOption(convertFromEl, base);
-    //         addedFromCurrencies.push(base);
-    //     }
-    // }
-
     allRates.forEach((rate) => {
         if (!addedFromCurrencies.includes(rate.base)) {
             // Add the elements to the first section element
