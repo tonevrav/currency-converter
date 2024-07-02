@@ -191,6 +191,15 @@ label {
   color: white;
 }
 
+.marketInfo {
+  border: 2px;
+  background-color: grey;
+  color: white;
+  padding: 5px;
+  max-width: 200px;
+  margin: 0 0 15px auto;
+}
+
 .container {
   max-width: 1170px;
   padding: 0 15px;

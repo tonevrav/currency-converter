@@ -5,7 +5,7 @@ const rateToEl = document.querySelector("#rateTo");
 const newRateEl = document.querySelector("#enterNewRate");
 const addRateEl = document.querySelector("#addNewRate");
 
-const allRates = [];
+let allRates = [];
 
 const convertFromEl = document.querySelector("#convertFrom");
 const convertToEl = document.querySelector("#convertTo");
@@ -22,6 +22,46 @@ const searchInput = document.querySelector("#search");
 
 // LOGIC
 
+function getDataFromApi() {
+    fetch(
+        "https://raw.githubusercontent.com/tonevrav/tonevrav.github.io/main/api.json"
+    )
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then((data) => {
+            allRates = data;
+
+            allRates.map((item) => {
+                item.timestamp = new Date().getTime();
+                item.date = new Date().toISOString().slice(0, 10);
+            });
+
+            addElementsToHTML();
+            addGridElementToHTML();
+        })
+        .catch((error) => alert(`Sorry. There is an error: ${error}`));
+}
+
+function showInfoMarket() {
+    const currentDate = new Date();
+    const getHours = currentDate.getHours();
+
+    let result = "";
+
+    getHours < 9 || 9 > 17
+        ? (result = "The market is now closed")
+        : (result = "The market is now open");
+
+    const container = document.querySelector(".marketInfo");
+    const messageInfoElement = document.createElement("p");
+    messageInfoElement.textContent = result;
+    container.appendChild(messageInfoElement);
+}
+
 function addNewRate(element) {
     element.preventDefault();
 
@@ -35,6 +75,7 @@ function addNewRate(element) {
             base: rateFrom,
             date: new Date().toISOString().slice(0, 10),
             rates: {
+                [rateFrom]: 1,
                 [rateTo]: newRate,
             },
         };
@@ -61,23 +102,20 @@ function addNewRate(element) {
 }
 
 function addElementsToHTML() {
-    for (let i = 0; i < allRates.length; i++) {
-        const base = allRates[i].base;
-        if (!addedFromCurrencies.includes(base)) {
+    allRates.forEach((rate) => {
+        if (!addedFromCurrencies.includes(rate.base)) {
             // Add the elements to the first section element
-            addOption(convertFromEl, base);
-            addedFromCurrencies.push(base);
+            addOption(convertFromEl, rate.base);
+            addedFromCurrencies.push(rate.base);
         }
-    }
+    });
 
-    // Dynamically add currencies to the second section element depending on which currency is selected in the first drop-down list
-    convertFromEl.onchange = function () {
+    // Dynamically adds currencies to the second drop-down list depending on which currency selected in the first drop-down list
+    convertFromEl.addEventListener("change", () => {
         const selectedCurrency = convertFromEl.value;
 
-        // ! DEFINITELY MUST CHANGE CODE BELOW
-        for (let i = convertToEl.options.length - 1; i > 0; i--) {
-            convertToEl.remove(i);
-        }
+        convertToEl.innerHTML = "";
+        addOption(convertToEl, "Select Currency");
 
         for (let i = 0; i < allRates.length; i++) {
             if (allRates[i].base === selectedCurrency) {
@@ -89,7 +127,7 @@ function addElementsToHTML() {
                 break;
             }
         }
-    };
+    });
 }
 
 function addOption(selectElement, value) {
@@ -106,8 +144,6 @@ function convertCurrency(event) {
     const currencyTo = convertToEl.value;
     const amount = amountEl.value;
 
-    // const selectedCurrency = convertFromEl.value;
-
     let rate = 0;
     let result = 0;
 
@@ -122,9 +158,11 @@ function convertCurrency(event) {
 
     if (
         currencyFrom === "Select Currency" ||
-        currencyTo === "Select Currency"
+        currencyTo === "Select Currency" ||
+        isNaN(amount) ||
+        amount <= 0
     ) {
-        resultMessageEl.innerText = "Please, select correct currency";
+        resultMessageEl.innerText = "Please specify valid data for conversion";
     } else {
         resultMessageEl.innerText = `${amount} ${currencyFrom} will be ${result.toFixed(
             2
@@ -154,7 +192,9 @@ function addGridElementToHTML() {
         for (const currency in rateObject.rates) {
             if (rateObject.rates.hasOwnProperty(currency)) {
                 const rateItem = document.createElement("li");
-                rateItem.textContent = `${currency}: ${rateObject.rates[currency]}`;
+                rateItem.textContent = `${currency}: ${rateObject.rates[
+                    currency
+                ].toFixed(2)}`;
                 ratesList.appendChild(rateItem);
             }
         }
@@ -168,7 +208,6 @@ function addGridElementToHTML() {
     });
 }
 
-// Search Functionality
 function updateGrid(rates) {
     const gridContainer = document.querySelector(".grid__container");
     gridContainer.innerHTML = "";
@@ -205,18 +244,17 @@ function updateGrid(rates) {
 
 function searchFunction() {
     const query = searchInput.value.toLowerCase();
-    const filteredRates = allRates.filter(
-        (rateObject) =>
-            rateObject.base.toLowerCase().includes(query) ||
-            Object.keys(rateObject.rates).some((currency) =>
-                currency.toLowerCase().includes(query)
-            )
-    );
+    const filteredRates = allRates.filter((rateObject) => {
+        if (rateObject.base.toLowerCase().includes(query)) {
+            return true;
+        }
+    });
     updateGrid(filteredRates);
 }
+
+getDataFromApi();
+showInfoMarket();
 
 addRateEl.addEventListener("click", addNewRate);
 convertEl.addEventListener("click", convertCurrency);
 searchInput.addEventListener("keyup", searchFunction);
-
-// RENDER
